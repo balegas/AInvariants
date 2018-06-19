@@ -1,0 +1,12 @@
+executor:
+  keyspace: warehouse
+  nThreads: 5
+  nKeys: 10
+  nOps : 100
+  deltaRange: 10
+  percentageDecs: 50
+  sleepTimeMinMs : 50
+  sleepTimeMaxMs: 100
+  initValMin : 100
+  initValMax: 150
+  
