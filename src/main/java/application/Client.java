@@ -1,5 +1,7 @@
 package application;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
@@ -9,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import application.configurations.ExecutorProperties;
 import application.warehouse.repository.ItemsRepository;
@@ -25,6 +28,8 @@ public class Client implements Runnable {
 	private Random rand;
 
 	private CountDownLatch latch;
+
+	private OutputStream os;
 
 	public Client() {
 	}
@@ -64,6 +69,22 @@ public class Client implements Runnable {
 				logger.info(String.format("Executor %d: increment %d. TOTOAL OPS: %d", id, amount, i));
 				repository.increment(key, amount);
 			}
+
+			// Timestamp, clientId, optype, key, value
+			String[] output = new String[] { System.currentTimeMillis() + "", i + "", dec ? "DEC" : "INC", key + "",
+					amount + "" };
+			if (os != null) {
+				byte[] osb = StringUtils.arrayToCommaDelimitedString(output).getBytes();
+				try {
+					synchronized (os) {
+						os.write(osb);
+						os.write('\n');
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
 		});
 
 		latch.countDown();
@@ -83,6 +104,10 @@ public class Client implements Runnable {
 
 	public void setLatch(CountDownLatch latch) {
 		this.latch = latch;
+	}
+
+	public void setResultsOS(OutputStream os) {
+		this.os = os;
 	}
 
 }
