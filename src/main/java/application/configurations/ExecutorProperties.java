@@ -23,6 +23,7 @@ public class ExecutorProperties {
     private String valueDistArg0;
     private String valueDistArg1;
     private String valueDistArg2;
+    private String outputFile;
 
     public int getDeltaRange() {
         return deltaRange;
@@ -166,6 +167,14 @@ public class ExecutorProperties {
 
     public void setValueDistArg2(String valueDistArg2) {
         this.valueDistArg2 = valueDistArg2;
+    }
+
+    public String getOutputFile() {
+        return outputFile;
+    }
+
+    public void setOutputFile(String outputFile) {
+        this.outputFile = outputFile;
     }
 
 }

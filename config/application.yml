@@ -16,3 +16,11 @@ executor:
   valDistArg0: 0.7
   valDistArg1: 0.1
   # valDistrArg2:
+---
+spring.profiles: printer
+executor:
+  outputFile: db-state.out 
+---
+spring.profiles: client
+executor:
+  outputFile: client-state.out

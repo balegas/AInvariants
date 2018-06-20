@@ -1,25 +1,36 @@
 package application;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
+import javax.management.MalformedObjectNameException;
+
+import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import application.configurations.ExecutorProperties;
 import application.generator.Generator;
+import application.internal.io.CSVOutput;
 import application.warehouse.repository.ItemsRepository;
 
 @Component
 @Scope("prototype")
+@Profile("client")
 public class Client implements Runnable {
 
     Logger logger = LoggerFactory.getLogger(Client.class);
@@ -80,18 +91,8 @@ public class Client implements Runnable {
             }
 
             // Timestamp, clientId, optype, key, value
-            String[] output = new String[] { System.currentTimeMillis() + "", i + "", dec ? "DEC" : "INC", key + "",
-                    amount + "" };
             if (os != null) {
-                byte[] osb = StringUtils.arrayToCommaDelimitedString(output).getBytes();
-                try {
-                    synchronized (os) {
-                        os.write(osb);
-                        os.write('\n');
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                CSVOutput.print(os, System.currentTimeMillis(), i, dec ? "DEC" : "INC", key, amount);
             }
 
         });
@@ -125,6 +126,37 @@ public class Client implements Runnable {
 
     public void setResultsOS(OutputStream os) {
         this.os = os;
+    }
+
+    public static void main(String[] args) throws IOException, MalformedObjectNameException, InterruptedException {
+        System.setProperty("spring.profiles.active", "client");
+        ConfigurableApplicationContext context = SpringApplication.run(Main.class);
+
+        ExecutorProperties config = context.getBean(ExecutorProperties.class);
+        OutputStream os;
+        if (!StringUtils.isEmpty(config.getOutputFile())) {
+            os = new BufferedOutputStream(new FileOutputStream(new File(config.getOutputFile())));
+        } else {
+            os = new NullOutputStream();
+        }
+
+        Random rand = new Random();
+        int nThreads = config.getnThreads();
+        CountDownLatch latch = new CountDownLatch(nThreads);
+
+        IntStream.range(0, nThreads).parallel().forEach(i -> {
+            Client executor = context.getBean(Client.class);
+            executor.setId(i);
+            executor.setRand(rand);
+            executor.setLatch(latch);
+            executor.setResultsOS(os);
+            executor.run();
+        });
+
+        latch.await();
+        os.close();
+
+        System.exit(0);
     }
 
 }
