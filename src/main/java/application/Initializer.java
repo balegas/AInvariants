@@ -44,6 +44,7 @@ public class Initializer {
         ConfigurableApplicationContext context = SpringApplication.run(Main.class);
         Initializer initializer = context.getBean(Initializer.class);
         initializer.init();
+        System.exit(0);
     }
 
 }

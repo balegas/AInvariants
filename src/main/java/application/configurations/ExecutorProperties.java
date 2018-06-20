@@ -24,6 +24,7 @@ public class ExecutorProperties {
     private String valueDistArg1;
     private String valueDistArg2;
     private String outputFile;
+    private int printIntervalMS;
 
     public int getDeltaRange() {
         return deltaRange;
@@ -175,6 +176,14 @@ public class ExecutorProperties {
 
     public void setOutputFile(String outputFile) {
         this.outputFile = outputFile;
+    }
+
+    public int getPrintIntervalMS() {
+        return printIntervalMS;
+    }
+
+    public void setPrintIntervalMS(int printIntervalMS) {
+        this.printIntervalMS = printIntervalMS;
     }
 
 }

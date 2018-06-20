@@ -5,7 +5,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.stream.IntStream;
+import java.util.List;
+import java.util.Map;
 
 import javax.management.MalformedObjectNameException;
 
@@ -19,6 +20,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import com.google.common.collect.ImmutableList;
 
 import application.configurations.ExecutorProperties;
 import application.internal.io.CSVOutput;
@@ -40,27 +43,30 @@ public class ClientDBPrinter implements Runnable {
 
     @Override
     public void run() {
-        int nKeys = config.getnKeys();
-        long[] data = new long[nKeys + 1];
-
-        IntStream.range(0, nKeys).forEach(i -> {
-            data[i] = repository.getStock(i);
-        });
-
-        StringBuilder log = new StringBuilder("END DB STATE: ");
-        for (int i = 0; i <= nKeys; i++) {
-            log.append(data[i]).append(",");
+        List<Map<String, Object>> columns = repository.getAllStock();
+        CSVOutput.printColumnValues(os, columns, "id");
+        while (true) {
+            List<Map<String, Object>> stocks = repository.getAllStock();
+            if (os != null) {
+                CSVOutput.printListMap(os, stocks, (List<String>) ImmutableList.of("id", "stock"));
+            }
+            thinkTime();
+            logger.info(stocks.toString());
         }
-
-        if (os != null) {
-            CSVOutput.print(os, log);
-        }
-
-        logger.info(log.toString());
     }
 
     public void setResultsOS(OutputStream os) {
         this.os = os;
+    }
+
+    private void thinkTime() {
+        int sleepTime = config.getPrintIntervalMS();
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) throws IOException, MalformedObjectNameException, InterruptedException {
@@ -77,11 +83,9 @@ public class ClientDBPrinter implements Runnable {
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                System.out.println("Shutdown Hook is running !");
                 try {
                     os.close();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
