@@ -6,18 +6,16 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
-import application.generator.Generator;
-import application.generator.HotspotIntegerGenerator;
-import application.generator.ZipfianGenerator;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import application.configurations.ExecutorProperties;
+import application.generator.Generator;
 import application.warehouse.repository.ItemsRepository;
 
 @Component
@@ -26,10 +24,10 @@ public class Client implements Runnable {
 
     Logger logger = LoggerFactory.getLogger(Client.class);
 
-    private @Autowired
-    ExecutorProperties config;
-    private @Autowired
-    ItemsRepository repository;
+    private @Autowired ExecutorProperties config;
+    private @Autowired ItemsRepository repository;
+    private @Autowired @Qualifier("keyGenerator") Generator<?> keyGenerator;
+    private @Autowired @Qualifier("valueGenerator") Generator<?> valueGenerator;
     private int id;
     private Random rand;
 
@@ -61,33 +59,29 @@ public class Client implements Runnable {
         int nOps = config.getnOps();
         int nKeys = config.getnKeys();
         int percentageDecs = config.getPercentageDecs();
-        int deltaRange = config.getDeltaRange();
 
         int[] data = new int[nKeys + 1];
         int[] counts = new int[nKeys + 1];
 
-        Generator key_generator = new HotspotIntegerGenerator(0, nKeys, 0.7, 0.1);
-        Generator value_generator = new HotspotIntegerGenerator(0, deltaRange, 0.7, 0.1);
-
         IntStream.range(0, nOps).forEach(i -> {
             thinkTime();
             boolean dec = Math.random() * 100 < percentageDecs;
-            int key = Math.toIntExact((long) key_generator.nextValue());
-            int amount = Math.toIntExact((long) value_generator.nextValue());
+            int key = Math.toIntExact((long) keyGenerator.nextValue());
+            int amount = Math.toIntExact((long) valueGenerator.nextValue());
             data[key]++;
             if (dec) {
-                //logger.info(String.format("Executor %d: decrement %d. TOTOAL OPS: %d", id, amount, i));
+                // logger.info(String.format("Executor %d: decrement %d. TOTOAL OPS: %d", id, amount, i));
                 repository.decrement(key, amount);
                 counts[key] -= amount;
             } else {
-                //logger.info(String.format("Executor %d: increment %d. TOTOAL OPS: %d", id, amount, i));
+                // logger.info(String.format("Executor %d: increment %d. TOTOAL OPS: %d", id, amount, i));
                 repository.increment(key, amount);
                 counts[key] += amount;
             }
 
             // Timestamp, clientId, optype, key, value
-            String[] output = new String[]{System.currentTimeMillis() + "", i + "", dec ? "DEC" : "INC", key + "",
-                    amount + ""};
+            String[] output = new String[] { System.currentTimeMillis() + "", i + "", dec ? "DEC" : "INC", key + "",
+                    amount + "" };
             if (os != null) {
                 byte[] osb = StringUtils.arrayToCommaDelimitedString(output).getBytes();
                 try {
@@ -103,10 +97,7 @@ public class Client implements Runnable {
         });
 
         /*
-        for (int j = 0; j <= nKeys; j++) {
-            System.out.format("%d, ", data[j]);
-        }
-        System.out.format("\n");
+         * for (int j = 0; j <= nKeys; j++) { System.out.format("%d, ", data[j]); } System.out.format("\n");
          */
         for (int j = 0; j <= nKeys; j++) {
             System.out.format("%d, ", counts[j]);
