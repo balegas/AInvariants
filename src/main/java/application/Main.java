@@ -47,6 +47,10 @@ public class Main {
 
 			latch.await();
 			os.close();
+
+			ClientDBPrinter dbPrinterExecutor = context.getBean(ClientDBPrinter.class);
+			dbPrinterExecutor.setLatch(latch);
+			dbPrinterExecutor.run();
 		}
 
 		System.exit(0);
