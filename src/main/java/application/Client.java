@@ -76,6 +76,8 @@ public class Client implements Runnable {
         int[] data = new int[nKeys + 1];
         int[] counts = new int[nKeys + 1];
 
+        // TODO: Check current counter value, decrement only if > 0; set CONSTANT value if < 0;
+        // adjust decrement value to respect >=0
         IntStream.range(0, nOps).forEach(i -> {
             thinkTime();
             boolean dec = Math.random() * 100 < percentageDecs;
@@ -83,11 +85,9 @@ public class Client implements Runnable {
             int amount = Math.toIntExact((long) valueGenerator.nextValue());
             data[key]++;
             if (dec) {
-                // logger.info(String.format("Executor %d: decrement %d. TOTOAL OPS: %d", id, amount, i));
                 repository.decrement(key, amount);
                 counts[key] -= amount;
             } else {
-                // logger.info(String.format("Executor %d: increment %d. TOTOAL OPS: %d", id, amount, i));
                 repository.increment(key, amount);
                 counts[key] += amount;
             }
@@ -98,9 +98,6 @@ public class Client implements Runnable {
 
         });
 
-        /*
-         * for (int j = 0; j <= nKeys; j++) { System.out.format("%d, ", data[j]); } System.out.format("\n");
-         */
         for (int j = 0; j <= nKeys; j++) {
             System.out.format("%d, ", counts[j]);
         }
