@@ -19,9 +19,9 @@ executor:
 ---
 spring.profiles: printer
 executor:
-  outputFile: db-state.out
+  outputFile: db-state.log
   print-interval-m-s: 1000 
 ---
 spring.profiles: client
 executor:
-  outputFile: client-state.out
+  outputFile: client-state.log

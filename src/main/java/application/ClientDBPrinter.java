@@ -44,11 +44,11 @@ public class ClientDBPrinter implements Runnable {
     @Override
     public void run() {
         List<Map<String, Object>> columns = repository.getAllStock();
-        CSVOutput.printColumnValues(os, columns, "id");
+        CSVOutput.printColumnValues(os, columns, "id", true);
         while (true) {
             List<Map<String, Object>> stocks = repository.getAllStock();
             if (os != null) {
-                CSVOutput.printListMap(os, stocks, (List<String>) ImmutableList.of("id", "stock"));
+                CSVOutput.printListMap(os, stocks, (List<String>) ImmutableList.of("stock"), true);
             }
             thinkTime();
             logger.info(stocks.toString());
