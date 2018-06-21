@@ -22,10 +22,24 @@ public class CSVOutput {
 
     }
 
-    public synchronized static void printColumnValues(OutputStream os, List<Map<String, Object>> rowList,
-            String columnName, boolean addTimestamp) {
+    public synchronized static void printColumnNames(OutputStream os, List<String> columnNames) {
         try {
-            if (addTimestamp) {
+            for (int i = 0; i < columnNames.size(); i++) {
+                os.write(columnNames.get(i).getBytes());
+                if (i < columnNames.size() - 1) {
+                    os.write(',');
+                }
+            }
+            os.write('\n');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized static void printColumnValues(OutputStream os, List<Map<String, Object>> rowList,
+            String columnName, boolean addTimestampAtStart) {
+        try {
+            if (addTimestampAtStart) {
                 os.write("TS".getBytes());
                 if (rowList.size() > 0) {
                     os.write(',');

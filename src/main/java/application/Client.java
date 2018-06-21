@@ -23,6 +23,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.ImmutableList;
+
 import application.configurations.ExecutorProperties;
 import application.generator.Generator;
 import application.internal.io.CSVOutput;
@@ -90,9 +92,8 @@ public class Client implements Runnable {
                 counts[key] += amount;
             }
 
-            // Timestamp, clientId, optype, key, value
             if (os != null) {
-                CSVOutput.print(os, System.currentTimeMillis(), i, dec ? "DEC" : "INC", key, amount);
+                CSVOutput.print(os, System.currentTimeMillis(), id, dec ? "DEC" : "INC", key, amount);
             }
 
         });
@@ -143,6 +144,10 @@ public class Client implements Runnable {
         Random rand = new Random();
         int nThreads = config.getnThreads();
         CountDownLatch latch = new CountDownLatch(nThreads);
+
+        if (os != null) {
+            CSVOutput.printColumnNames(os, ImmutableList.of("TS", "clientId", "opType", "key", "value"));
+        }
 
         IntStream.range(0, nThreads).parallel().forEach(i -> {
             Client executor = context.getBean(Client.class);
