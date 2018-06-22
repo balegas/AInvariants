@@ -45,17 +45,11 @@ public class ItemsRepository {
         return uuid;
     }
 
-    public void decrement(int uuid, int amount) {
-        // logger.info(String.format("DECREMENTING COUNTER WITH ID: %s", uuid));
-
-        // Conditions not supported on counters
+    public void decrement(int uuid, long amount) {
         cqlOperations.execute("UPDATE " + ITEMS_COUNT_TABLE + " SET stock = stock - " + amount + " WHERE id = " + uuid);
     }
 
     public void increment(int uuid, int amount) {
-        // logger.info(String.format("DECREMENTING COUNTER WITH ID: %s", uuid));
-
-        // Conditions not supported on counters
         cqlOperations.execute("UPDATE " + ITEMS_COUNT_TABLE + " SET stock = stock + " + amount + " WHERE id = " + uuid);
     }
 
@@ -68,6 +62,10 @@ public class ItemsRepository {
     public List<Map<String, Object>> getAllStock() {
         return cqlOperations.queryForList("SELECT id, stock FROM " + ITEMS_COUNT_TABLE);
 
+    }
+
+    public void setValue(int uuid, long amount) {
+        cqlOperations.execute("UPDATE " + ITEMS_COUNT_TABLE + " SET stock = stock + " + amount + " WHERE id = " + uuid);
     }
 
 }

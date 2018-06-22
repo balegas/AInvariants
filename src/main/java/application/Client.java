@@ -76,16 +76,21 @@ public class Client implements Runnable {
         int[] data = new int[nKeys + 1];
         int[] counts = new int[nKeys + 1];
 
-        // TODO: Check current counter value, decrement only if > 0; set CONSTANT value if < 0;
-        // adjust decrement value to respect >=0
         IntStream.range(0, nOps).forEach(i -> {
             thinkTime();
             boolean dec = Math.random() * 100 < percentageDecs;
             int key = Math.toIntExact((long) keyGenerator.nextValue());
             int amount = Math.toIntExact((long) valueGenerator.nextValue());
             data[key]++;
-            if (dec) {
-                repository.decrement(key, amount);
+            Long value = repository.getStock(key);
+
+            if (value <= 0) {
+                repository.setValue(key, config.getInitValMin());
+                if (os != null) {
+                    CSVOutput.print(os, System.currentTimeMillis(), id, "SET", key, amount, value);
+                }
+            } else if (dec) {
+                repository.decrement(key, Math.min(value, amount));
                 counts[key] -= amount;
             } else {
                 repository.increment(key, amount);
@@ -93,7 +98,7 @@ public class Client implements Runnable {
             }
 
             if (os != null) {
-                CSVOutput.print(os, System.currentTimeMillis(), id, dec ? "DEC" : "INC", key, amount);
+                CSVOutput.print(os, System.currentTimeMillis(), id, dec ? "DEC" : "INC", key, amount, value);
             }
 
         });
@@ -143,7 +148,7 @@ public class Client implements Runnable {
         CountDownLatch latch = new CountDownLatch(nThreads);
 
         if (os != null) {
-            CSVOutput.printColumnNames(os, ImmutableList.of("TS", "clientId", "opType", "key", "value"));
+            CSVOutput.printColumnNames(os, ImmutableList.of("TS", "clientId", "opType", "key", "value", "readValue"));
         }
 
         IntStream.range(0, nThreads).parallel().forEach(i -> {
@@ -152,7 +157,7 @@ public class Client implements Runnable {
             executor.setRand(rand);
             executor.setLatch(latch);
             executor.setResultsOS(os);
-            executor.run();
+            new Thread(executor).start();
         });
 
         latch.await();

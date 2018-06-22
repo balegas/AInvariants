@@ -38,7 +38,7 @@ public class ApplicationConfiguration {
 
         switch (className) {
         case "HotspotIntegerGenerator":
-            return new HotspotIntegerGenerator(0, config.getnKeys(), Double.parseDouble(config.getKeyDistArg0()),
+            return new HotspotIntegerGenerator(0, config.getnKeys() - 1, Double.parseDouble(config.getKeyDistArg0()),
                     Double.parseDouble(config.getKeyDistArg1()));
         default:
             return new UniformLongGenerator(0, config.getnKeys());
@@ -54,7 +54,7 @@ public class ApplicationConfiguration {
 
         switch (className) {
         case "HotspotIntegerGenerator":
-            return new HotspotIntegerGenerator(0, config.getnKeys(), Double.parseDouble(config.getKeyDistArg0()),
+            return new HotspotIntegerGenerator(0, config.getDeltaRange(), Double.parseDouble(config.getKeyDistArg0()),
                     Double.parseDouble(config.getKeyDistArg1()));
         default:
             return new UniformLongGenerator(0, config.getnKeys());

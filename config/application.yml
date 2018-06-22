@@ -1,13 +1,15 @@
 executor:
   keyspace: warehouse
-  nThreads: 5
+  nThreads: 25
   nKeys: 10
-  nOps: 100
-  percentageDecs: 50
+  nOps: 1000
+  deltaRange: 10
+  printIntervalMS: 1000  
+  percentageDecs: 80
   sleepTimeMinMs: 50
   sleepTimeMaxMs: 100
-  initValMin: 100
-  initValMax: 150
+  initValMin: 50
+  initValMax: 80
   keyGeneratorClass: HotspotIntegerGenerator
   keyDistArg0: 0.7
   keyDistArg1: 0.1
