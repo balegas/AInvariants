@@ -20,13 +20,18 @@ public class ApplicationConfiguration {
     @Autowired
     ExecutorProperties config;
 
-    public @Bean Session session() {
-        Cluster cluster = Cluster.builder().addContactPoints("localhost").build();
-        return cluster.connect(config.getKeyspace());
+    private Cluster cluster;
+
+    @Autowired
+    public ApplicationConfiguration(Cluster cluster) {
+        this.cluster = cluster;
     }
 
     public @Bean CqlTemplate cqlTemplate() {
-        return new CqlTemplate(session());
+        Session session = cluster.connect(config.getKeyspace());
+        CqlTemplate template = new CqlTemplate(session);
+        template.setConsistencyLevel(config.getConsistency());
+        return template;
     }
 
     @Bean

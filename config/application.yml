@@ -4,8 +4,9 @@ executor:
   nKeys: 10
   nOps: 1000
   deltaRange: 10
-  printIntervalMS: 1000  
-  percentageDecs: 80
+  print-interval-m-s: 1000
+  percentageRO: 50   
+  percentageDecs: 95
   sleepTimeMinMs: 50
   sleepTimeMaxMs: 100
   initValMin: 50
@@ -18,6 +19,10 @@ executor:
   valDistArg0: 0.7
   valDistArg1: 0.1
   # valDistrArg2:
+  cassandra-endpoints:
+  - localhost
+  consistency: local-quorum
+  dc-name: dc1
 ---
 spring.profiles: printer
 executor:

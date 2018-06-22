@@ -72,35 +72,45 @@ public class Client implements Runnable {
         int nOps = config.getnOps();
         int nKeys = config.getnKeys();
         int percentageDecs = config.getPercentageDecs();
+        int percentageRO = config.getPercentageRO();
 
         int[] data = new int[nKeys + 1];
         int[] counts = new int[nKeys + 1];
 
         IntStream.range(0, nOps).forEach(i -> {
             thinkTime();
-            boolean dec = Math.random() * 100 < percentageDecs;
+            boolean ro = Math.random() * 100 < percentageRO;
             int key = Math.toIntExact((long) keyGenerator.nextValue());
-            int amount = Math.toIntExact((long) valueGenerator.nextValue());
-            data[key]++;
-            Long value = repository.getStock(key);
-
-            if (value <= 0) {
-                repository.setValue(key, config.getInitValMin());
+            if (ro) {
+                Long value = repository.getStock(key);
                 if (os != null) {
-                    CSVOutput.print(os, System.currentTimeMillis(), id, "SET", key, amount, value);
+                    CSVOutput.print(os, System.currentTimeMillis(), id, "RO", key, value, value);
                 }
-            } else if (dec) {
-                repository.decrement(key, Math.min(value, amount));
-                counts[key] -= amount;
+
             } else {
-                repository.increment(key, amount);
-                counts[key] += amount;
-            }
+                boolean dec = Math.random() * 100 < percentageDecs;
 
-            if (os != null) {
-                CSVOutput.print(os, System.currentTimeMillis(), id, dec ? "DEC" : "INC", key, amount, value);
-            }
+                int amount = Math.toIntExact((long) valueGenerator.nextValue());
+                data[key]++;
+                Long value = repository.getStock(key);
 
+                if (value <= 0) {
+                    repository.setValue(key, config.getInitValMin());
+                    if (os != null) {
+                        CSVOutput.print(os, System.currentTimeMillis(), id, "SET", key, amount, value);
+                    }
+                } else if (dec) {
+                    repository.decrement(key, Math.min(value, amount));
+                    counts[key] -= amount;
+                } else {
+                    repository.increment(key, amount);
+                    counts[key] += amount;
+                }
+
+                if (os != null) {
+                    CSVOutput.print(os, System.currentTimeMillis(), id, dec ? "DEC" : "INC", key, amount, value);
+                }
+            }
         });
 
         for (int j = 0; j <= nKeys; j++) {
@@ -136,6 +146,8 @@ public class Client implements Runnable {
         ConfigurableApplicationContext context = SpringApplication.run(Main.class);
 
         ExecutorProperties config = context.getBean(ExecutorProperties.class);
+        System.out.println(config);
+
         OutputStream os;
         if (!StringUtils.isEmpty(config.getOutputFile())) {
             os = new BufferedOutputStream(new FileOutputStream(new File(config.getOutputFile())));
@@ -162,7 +174,7 @@ public class Client implements Runnable {
 
         latch.await();
         os.close();
-
+        System.out.println("All clients finished");
         System.exit(0);
     }
 

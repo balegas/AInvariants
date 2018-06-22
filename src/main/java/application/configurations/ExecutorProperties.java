@@ -1,6 +1,10 @@
 package application.configurations;
 
+import java.util.Arrays;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import com.datastax.driver.core.ConsistencyLevel;
 
 @ConfigurationProperties("executor")
 public class ExecutorProperties {
@@ -10,6 +14,7 @@ public class ExecutorProperties {
     private int nKeys;
     private int nOps;
     private int deltaRange;
+    private int percentageRO;
     private int percentageDecs;
     private int sleepTimeMinMs;
     private int sleepTimeMaxMs;
@@ -25,13 +30,16 @@ public class ExecutorProperties {
     private String valueDistArg2;
     private String outputFile;
     private int printIntervalMS;
+    private String[] cassandraEndpoints;
+    private ConsistencyLevel consistency;
+    private String dcName;
 
-    public int getDeltaRange() {
-        return deltaRange;
+    public String getKeyspace() {
+        return keyspace;
     }
 
-    public void setDeltaRange(int deltaRange) {
-        this.deltaRange = deltaRange;
+    public void setKeyspace(String keyspace) {
+        this.keyspace = keyspace;
     }
 
     public int getnThreads() {
@@ -42,14 +50,6 @@ public class ExecutorProperties {
         this.nThreads = nThreads;
     }
 
-    public String getKeyspace() {
-        return keyspace;
-    }
-
-    public void setKeyspace(String keyspace) {
-        this.keyspace = keyspace;
-    }
-
     public int getnKeys() {
         return nKeys;
     }
@@ -58,20 +58,36 @@ public class ExecutorProperties {
         this.nKeys = nKeys;
     }
 
-    public int getPercentageDecs() {
-        return percentageDecs;
-    }
-
-    public void setPercentageDecs(int percentageDecs) {
-        this.percentageDecs = percentageDecs;
-    }
-
     public int getnOps() {
         return nOps;
     }
 
     public void setnOps(int nOps) {
         this.nOps = nOps;
+    }
+
+    public int getDeltaRange() {
+        return deltaRange;
+    }
+
+    public void setDeltaRange(int deltaRange) {
+        this.deltaRange = deltaRange;
+    }
+
+    public int getPercentageRO() {
+        return percentageRO;
+    }
+
+    public void setPercentageRO(int percentageRO) {
+        this.percentageRO = percentageRO;
+    }
+
+    public int getPercentageDecs() {
+        return percentageDecs;
+    }
+
+    public void setPercentageDecs(int percentageDecs) {
+        this.percentageDecs = percentageDecs;
     }
 
     public int getSleepTimeMinMs() {
@@ -184,6 +200,43 @@ public class ExecutorProperties {
 
     public void setPrintIntervalMS(int printIntervalMS) {
         this.printIntervalMS = printIntervalMS;
+    }
+
+    public String[] getCassandraEndpoints() {
+        return cassandraEndpoints;
+    }
+
+    public void setCassandraEndpoints(String[] cassandraEndpoints) {
+        this.cassandraEndpoints = cassandraEndpoints;
+    }
+
+    public ConsistencyLevel getConsistency() {
+        return consistency;
+    }
+
+    public void setConsistency(ConsistencyLevel consistency) {
+        this.consistency = consistency;
+    }
+
+    public String getDcName() {
+        return dcName;
+    }
+
+    public void setDcName(String dcName) {
+        this.dcName = dcName;
+    }
+
+    @Override
+    public String toString() {
+        return "ExecutorProperties [keyspace=" + keyspace + ", nThreads=" + nThreads + ", nKeys=" + nKeys + ", nOps="
+                + nOps + ", deltaRange=" + deltaRange + ", percentageRO=" + percentageRO + ", percentageDecs="
+                + percentageDecs + ", sleepTimeMinMs=" + sleepTimeMinMs + ", sleepTimeMaxMs=" + sleepTimeMaxMs
+                + ", initValMin=" + initValMin + ", initValMax=" + initValMax + ", keyGeneratorClass="
+                + keyGeneratorClass + ", keyDistArg0=" + keyDistArg0 + ", keyDistArg1=" + keyDistArg1 + ", keyDistArg2="
+                + keyDistArg2 + ", valueGeneratorClass=" + valueGeneratorClass + ", valueDistArg0=" + valueDistArg0
+                + ", valueDistArg1=" + valueDistArg1 + ", valueDistArg2=" + valueDistArg2 + ", outputFile=" + outputFile
+                + ", printIntervalMS=" + printIntervalMS + ", cassandraEndpoints=" + Arrays.toString(cassandraEndpoints)
+                + ", consistency=" + consistency + ", dcName=" + dcName + "]";
     }
 
 }
