@@ -1,6 +1,6 @@
 package application.configurations;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -30,9 +30,10 @@ public class ExecutorProperties {
     private String valueDistArg2;
     private String outputFile;
     private int printIntervalMS;
-    private String[] cassandraEndpoints;
     private ConsistencyLevel consistency;
     private String dcName;
+    private List<String> endpoints;
+    private String endpointsString;
 
     public String getKeyspace() {
         return keyspace;
@@ -202,14 +203,6 @@ public class ExecutorProperties {
         this.printIntervalMS = printIntervalMS;
     }
 
-    public String[] getCassandraEndpoints() {
-        return cassandraEndpoints;
-    }
-
-    public void setCassandraEndpoints(String[] cassandraEndpoints) {
-        this.cassandraEndpoints = cassandraEndpoints;
-    }
-
     public ConsistencyLevel getConsistency() {
         return consistency;
     }
@@ -226,6 +219,22 @@ public class ExecutorProperties {
         this.dcName = dcName;
     }
 
+    public List<String> getEndpoints() {
+        return endpoints;
+    }
+
+    public void setEndpoints(List<String> endpoints) {
+        this.endpoints = endpoints;
+    }
+
+    public String getEndpointsString() {
+        return endpointsString;
+    }
+
+    public void setEndpointsString(String endpointsString) {
+        this.endpointsString = endpointsString;
+    }
+
     @Override
     public String toString() {
         return "ExecutorProperties [keyspace=" + keyspace + ", nThreads=" + nThreads + ", nKeys=" + nKeys + ", nOps="
@@ -235,8 +244,8 @@ public class ExecutorProperties {
                 + keyGeneratorClass + ", keyDistArg0=" + keyDistArg0 + ", keyDistArg1=" + keyDistArg1 + ", keyDistArg2="
                 + keyDistArg2 + ", valueGeneratorClass=" + valueGeneratorClass + ", valueDistArg0=" + valueDistArg0
                 + ", valueDistArg1=" + valueDistArg1 + ", valueDistArg2=" + valueDistArg2 + ", outputFile=" + outputFile
-                + ", printIntervalMS=" + printIntervalMS + ", cassandraEndpoints=" + Arrays.toString(cassandraEndpoints)
-                + ", consistency=" + consistency + ", dcName=" + dcName + "]";
+                + ", printIntervalMS=" + printIntervalMS + ", cassandraEndpoints=" + endpoints + ", consistency="
+                + consistency + ", dcName=" + dcName + "]";
     }
 
 }

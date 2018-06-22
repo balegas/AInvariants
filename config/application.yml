@@ -5,7 +5,7 @@ executor:
   nOps: 1000
   deltaRange: 10
   print-interval-m-s: 1000
-  percentageRO: 50   
+  percentage-r-o: 50   
   percentageDecs: 95
   sleepTimeMinMs: 50
   sleepTimeMaxMs: 100
@@ -14,13 +14,11 @@ executor:
   keyGeneratorClass: HotspotIntegerGenerator
   keyDistArg0: 0.7
   keyDistArg1: 0.1
-  # keyDistrArg2:
   valueGeneratorClass: HotspotIntegerGenerator
-  valDistArg0: 0.7
-  valDistArg1: 0.1
-  # valDistrArg2:
-  cassandra-endpoints:
-  - localhost
+  valueDistArg0: 0.7
+  valueDistArg1: 0.1
+  endpoints: 
+    - localhost
   consistency: local-quorum
   dc-name: dc1
 ---

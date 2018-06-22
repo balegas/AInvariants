@@ -1,25 +1,15 @@
 package application;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
-import javax.management.MalformedObjectNameException;
-
-import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ImmutableList;
 
@@ -66,33 +56,6 @@ public class ClientDBPrinter implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-    }
-
-    public static void main(String[] args) throws IOException, MalformedObjectNameException, InterruptedException {
-        System.setProperty("spring.profiles.active", "printer");
-        ConfigurableApplicationContext context = SpringApplication.run(Main.class);
-        ClientDBPrinter dbPrinterExecutor = context.getBean(ClientDBPrinter.class);
-        ExecutorProperties config = context.getBean(ExecutorProperties.class);
-        OutputStream os;
-        if (!StringUtils.isEmpty(config.getOutputFile())) {
-            os = new BufferedOutputStream(new FileOutputStream(new File(config.getOutputFile())));
-        } else {
-            os = new NullOutputStream();
-        }
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    os.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        dbPrinterExecutor.setResultsOS(os);
-        dbPrinterExecutor.run();
 
     }
 }

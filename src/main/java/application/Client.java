@@ -1,29 +1,17 @@
 package application;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.IntStream;
 
-import javax.management.MalformedObjectNameException;
-
-import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import com.google.common.collect.ImmutableList;
 
 import application.configurations.ExecutorProperties;
 import application.generator.Generator;
@@ -139,43 +127,6 @@ public class Client implements Runnable {
 
     public void setResultsOS(OutputStream os) {
         this.os = os;
-    }
-
-    public static void main(String[] args) throws IOException, MalformedObjectNameException, InterruptedException {
-        System.setProperty("spring.profiles.active", "client");
-        ConfigurableApplicationContext context = SpringApplication.run(Main.class);
-
-        ExecutorProperties config = context.getBean(ExecutorProperties.class);
-        System.out.println(config);
-
-        OutputStream os;
-        if (!StringUtils.isEmpty(config.getOutputFile())) {
-            os = new BufferedOutputStream(new FileOutputStream(new File(config.getOutputFile())));
-        } else {
-            os = new NullOutputStream();
-        }
-
-        Random rand = new Random();
-        int nThreads = config.getnThreads();
-        CountDownLatch latch = new CountDownLatch(nThreads);
-
-        if (os != null) {
-            CSVOutput.printColumnNames(os, ImmutableList.of("TS", "clientId", "opType", "key", "value", "readValue"));
-        }
-
-        IntStream.range(0, nThreads).parallel().forEach(i -> {
-            Client executor = context.getBean(Client.class);
-            executor.setId(i);
-            executor.setRand(rand);
-            executor.setLatch(latch);
-            executor.setResultsOS(os);
-            new Thread(executor).start();
-        });
-
-        latch.await();
-        os.close();
-        System.out.println("All clients finished");
-        System.exit(0);
     }
 
 }

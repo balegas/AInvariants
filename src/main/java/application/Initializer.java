@@ -1,16 +1,11 @@
 package application;
 
-import java.io.IOException;
 import java.util.Random;
 import java.util.stream.IntStream;
-
-import javax.management.MalformedObjectNameException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import application.configurations.ExecutorProperties;
@@ -39,12 +34,4 @@ public class Initializer {
             repository.addItem(i, "item_" + i, initVal);
         });
     }
-
-    public static void main(String[] args) throws IOException, MalformedObjectNameException, InterruptedException {
-        ConfigurableApplicationContext context = SpringApplication.run(Main.class);
-        Initializer initializer = context.getBean(Initializer.class);
-        initializer.init();
-        System.exit(0);
-    }
-
 }

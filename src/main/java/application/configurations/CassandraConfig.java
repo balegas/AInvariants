@@ -25,7 +25,11 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     public CassandraCqlClusterFactoryBean cluster() {
         CassandraCqlClusterFactoryBean bean = new CassandraCqlClusterFactoryBean();
         bean.setKeyspaceCreations(getKeyspaceCreations());
-        bean.setContactPoints(StringUtils.arrayToCommaDelimitedString(config.getCassandraEndpoints()));
+        if (!StringUtils.isEmpty(config.getEndpointsString())) {
+            bean.setContactPoints(config.getEndpointsString());
+        } else {
+            bean.setContactPoints(StringUtils.collectionToCommaDelimitedString(config.getEndpoints()));
+        }
         // bean.setUsername(USERNAME);
         // bean.setPassword(PASSWORD);
         return bean;
