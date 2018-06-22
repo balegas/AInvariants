@@ -25,11 +25,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     public CassandraCqlClusterFactoryBean cluster() {
         CassandraCqlClusterFactoryBean bean = new CassandraCqlClusterFactoryBean();
         bean.setKeyspaceCreations(getKeyspaceCreations());
-        if (!StringUtils.isEmpty(config.getEndpointsString())) {
-            bean.setContactPoints(config.getEndpointsString());
-        } else {
-            bean.setContactPoints(StringUtils.collectionToCommaDelimitedString(config.getEndpoints()));
-        }
+        bean.setContactPoints(StringUtils.collectionToCommaDelimitedString(config.getEndpoints()));
         // bean.setUsername(USERNAME);
         // bean.setPassword(PASSWORD);
         return bean;
@@ -56,7 +52,6 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
         return createKeyspaceSpecifications;
     }
 
-    // Below method creates "my_keyspace" if it doesnt exist.
     @SuppressWarnings("static-access")
     private CreateKeyspaceSpecification getKeySpaceSpecification() {
         CreateKeyspaceSpecification warehouseKeyspace = CreateKeyspaceSpecification

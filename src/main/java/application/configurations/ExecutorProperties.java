@@ -33,7 +33,6 @@ public class ExecutorProperties {
     private ConsistencyLevel consistency;
     private String dcName;
     private List<String> endpoints;
-    private String endpointsString;
 
     public String getKeyspace() {
         return keyspace;
@@ -225,14 +224,6 @@ public class ExecutorProperties {
 
     public void setEndpoints(List<String> endpoints) {
         this.endpoints = endpoints;
-    }
-
-    public String getEndpointsString() {
-        return endpointsString;
-    }
-
-    public void setEndpointsString(String endpointsString) {
-        this.endpointsString = endpointsString;
     }
 
     @Override

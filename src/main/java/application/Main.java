@@ -28,11 +28,13 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0 && (args[0].equals("--init") || args[0].equals("-i"))) {
+            System.out.println("Running Initializer");
             startInitializer();
-        }
-        if (args.length > 0 && (args[0].equals("--print") || args[0].equals("-o"))) {
+        } else if (args.length > 0 && (args[0].equals("--print") || args[0].equals("-o"))) {
+            System.out.println("Running Printer");
             startPrinter();
         } else {
+            System.out.println("Running Client");
             startClient();
         }
     }
