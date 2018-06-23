@@ -9,10 +9,9 @@ TODO: Add description
 
 Need to create docker compose file with attached volumes to store output. Here are the commands you can use to set-up a two DC deployment and run the client.
 
-First, get the images:
+First, get pull the client image:
 ```sh
 $ docker pull balegas/ainvariants
-$ docker pull cassandra:3
 ```
 
 Create network:
