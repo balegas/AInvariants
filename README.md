@@ -37,7 +37,7 @@ $ docker run --name node02 --network cassandra-network \
  -e CASSANDRA_DC=dc2 \
  -d launcher.gcr.io/google/cassandra3
  
-$docker logs -f node02
+$ docker logs -f node02
 ```
 
 Run client (-i initialize, -p printstate):

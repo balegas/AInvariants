@@ -13,6 +13,7 @@ ADD config/ /usr/share/AInvariants/config
 
 WORKDIR /usr/share/AInvariants/
 
+ENV CASSANDRA_DC="dc1"
 ENV CASSANDRA_ENDPOINTS="node01"
 
 ENTRYPOINT ["/usr/bin/java", "-jar", "/usr/share/AInvariants/AInvariants-1.jar"]

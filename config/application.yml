@@ -20,7 +20,7 @@ executor:
   endpoints: 
     - localhost
   consistency: local-quorum
-  dc-name: dc1
+  dc-names: dc1,dc2
 ---
 spring.profiles: printer
 executor:

@@ -31,7 +31,7 @@ public class ExecutorProperties {
     private String outputFile;
     private int printIntervalMS;
     private ConsistencyLevel consistency;
-    private String dcName;
+    private List<String> dcNames;
     private List<String> endpoints;
 
     public String getKeyspace() {
@@ -210,12 +210,12 @@ public class ExecutorProperties {
         this.consistency = consistency;
     }
 
-    public String getDcName() {
-        return dcName;
+    public List<String> getDcNames() {
+        return dcNames;
     }
 
-    public void setDcName(String dcName) {
-        this.dcName = dcName;
+    public void setDcNames(List<String> dcNames) {
+        this.dcNames = dcNames;
     }
 
     public List<String> getEndpoints() {
@@ -235,8 +235,8 @@ public class ExecutorProperties {
                 + keyGeneratorClass + ", keyDistArg0=" + keyDistArg0 + ", keyDistArg1=" + keyDistArg1 + ", keyDistArg2="
                 + keyDistArg2 + ", valueGeneratorClass=" + valueGeneratorClass + ", valueDistArg0=" + valueDistArg0
                 + ", valueDistArg1=" + valueDistArg1 + ", valueDistArg2=" + valueDistArg2 + ", outputFile=" + outputFile
-                + ", printIntervalMS=" + printIntervalMS + ", cassandraEndpoints=" + endpoints + ", consistency="
-                + consistency + ", dcName=" + dcName + "]";
+                + ", printIntervalMS=" + printIntervalMS + ", consistency=" + consistency + ", dcNames=" + dcNames
+                + ", endpoints=" + endpoints + "]";
     }
 
 }

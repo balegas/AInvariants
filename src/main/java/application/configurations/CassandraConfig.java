@@ -10,6 +10,7 @@ import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.CassandraCqlClusterFactoryBean;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
+import org.springframework.data.cassandra.core.cql.keyspace.DataCenterReplication;
 import org.springframework.util.StringUtils;
 
 @Configuration
@@ -57,6 +58,10 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
         CreateKeyspaceSpecification warehouseKeyspace = CreateKeyspaceSpecification
                 .createKeyspace(config.getKeyspace());
         warehouseKeyspace.ifNotExists(true).createKeyspace(config.getKeyspace());
+        for (String dcName : config.getDcNames()) {
+            warehouseKeyspace
+                    .withNetworkReplication(DataCenterReplication.of(dcName, config.getConsistency().ordinal()));
+        }
         return warehouseKeyspace;
     }
 
