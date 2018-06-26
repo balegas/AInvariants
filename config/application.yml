@@ -20,13 +20,13 @@ executor:
   endpoints: 
     - localhost
   consistency: local-quorum
-  dc-names: dc1,dc2
+  dc-names: dc1
 ---
 spring.profiles: printer
 executor:
-  outputFile: db-state.log
+  outputFile: output/db-state.log
   print-interval-m-s: 1000 
 ---
 spring.profiles: client
 executor:
-  outputFile: client-state.log
+  outputFile: output/client-state.log
