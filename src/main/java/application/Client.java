@@ -3,7 +3,7 @@ package application;
 import java.io.OutputStream;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
-import java.util.stream.IntStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,10 +29,12 @@ public class Client implements Runnable {
     private @Autowired ItemsRepository repository;
     private @Autowired @Qualifier("keyGenerator") Generator<?> keyGenerator;
     private @Autowired @Qualifier("valueGenerator") Generator<?> valueGenerator;
+    private @Autowired @Qualifier("sleepTimeGenerator") Generator<?> sleepTimeGenerator;
     private int id;
     private Random rand;
 
     private CountDownLatch latch;
+    private AtomicBoolean active;
 
     private OutputStream os;
 
@@ -55,9 +57,13 @@ public class Client implements Runnable {
         this.rand = rand;
     }
 
+    public void setActive(AtomicBoolean active) {
+        this.active = active;
+    }
+
     @Override
     public void run() {
-        int nOps = config.getnOps();
+        int executionTime = config.getExecutionTime();
         int nKeys = config.getnKeys();
         int percentageDecs = config.getPercentageDecs();
         int percentageRO = config.getPercentageRO();
@@ -65,8 +71,12 @@ public class Client implements Runnable {
         int[] data = new int[nKeys + 1];
         int[] counts = new int[nKeys + 1];
 
-        IntStream.range(0, nOps).forEach(i -> {
+        long start = System.currentTimeMillis();
+        while (!((System.currentTimeMillis() - start) / 1000 > executionTime)) {
             thinkTime();
+            if (!active.get()) {
+                continue;
+            }
             boolean ro = Math.random() * 100 < percentageRO;
             int key = Math.toIntExact((long) keyGenerator.nextValue());
             if (ro) {
@@ -99,9 +109,11 @@ public class Client implements Runnable {
                     CSVOutput.print(os, System.currentTimeMillis(), id, dec ? "DEC" : "INC", key, amount, value);
                 }
             }
-        });
+        }
 
-        for (int j = 0; j <= nKeys; j++) {
+        for (
+
+                int j = 0; j <= nKeys; j++) {
             System.out.format("%d, ", counts[j]);
         }
         System.out.format("\n");
@@ -110,11 +122,9 @@ public class Client implements Runnable {
     }
 
     private void thinkTime() {
-        int minLatency = config.getSleepTimeMinMs();
-        int maxLatency = config.getSleepTimeMaxMs();
-
         try {
-            Thread.sleep(minLatency + rand.nextInt(maxLatency - minLatency));
+            long sleepTime = (long) sleepTimeGenerator.nextValue();
+            Thread.sleep(sleepTime);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

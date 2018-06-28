@@ -36,10 +36,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public Generator<?> keyGenerator() {
-        String className = config.getKeyGeneratorClass();
-        if (className == null) {
-            className = "";
-        }
+        String className = config.getKeyGeneratorClass() != null ? config.getKeyGeneratorClass() : "";
 
         switch (className) {
         case "HotspotIntegerGenerator":
@@ -52,15 +49,36 @@ public class ApplicationConfiguration {
 
     @Bean
     public Generator<?> valueGenerator() {
-        String className = config.getKeyGeneratorClass();
-        if (className == null) {
-            className = "";
-        }
+        String className = config.getValueGeneratorClass() != null ? config.getValueGeneratorClass() : "";
 
         switch (className) {
         case "HotspotIntegerGenerator":
-            return new HotspotIntegerGenerator(0, config.getDeltaRange(), Double.parseDouble(config.getKeyDistArg0()),
-                    Double.parseDouble(config.getKeyDistArg1()));
+            return new HotspotIntegerGenerator(0, config.getDeltaRange(), Double.parseDouble(config.getValueDistArg0()),
+                    Double.parseDouble(config.getValueDistArg1()));
+        default:
+            return new UniformLongGenerator(0, config.getnKeys());
+        }
+    }
+
+    @Bean
+    public Generator<?> sleepTimeGenerator() {
+        String className = config.getSleepGeneratorClass() != null ? config.getSleepGeneratorClass() : "";
+        switch (className) {
+        case "HotspotIntegerGenerator":
+            return new HotspotIntegerGenerator(config.getMinSleepTime(), config.getMaxSleepTime(),
+                    Double.parseDouble(config.getSleepDistArg0()), Double.parseDouble(config.getSleepDistArg1()));
+        default:
+            return new UniformLongGenerator(0, config.getnKeys());
+        }
+    }
+
+    @Bean
+    public Generator<?> clientGenerator() {
+        String className = config.getClientsGeneratorClass() != null ? config.getClientsGeneratorClass() : "";
+        switch (className) {
+        case "HotspotIntegerGenerator":
+            return new HotspotIntegerGenerator(0, config.getnThreads(), Double.parseDouble(config.getClientDistArg0()),
+                    Double.parseDouble(config.getClientDistArg1()));
         default:
             return new UniformLongGenerator(0, config.getnKeys());
         }
