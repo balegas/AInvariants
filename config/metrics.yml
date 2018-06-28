@@ -24,7 +24,7 @@
 
 csv:
   -
-    outdir: '/usr/share/AInvariants/output/csv'
+    outdir: '/var/lib/cassandra/csv'
     period: 1
     timeunit: 'SECONDS'
 
