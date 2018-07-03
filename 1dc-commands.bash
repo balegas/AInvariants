@@ -27,6 +27,7 @@ case $key in
         docker run --name cassandra-client -v $(pwd)/output/client:/usr/share/AInvariants/output \
             --network cassandra-network \
             -e EXECUTOR_ENDPOINTS=node01,node02,node03 \
+            -e EXECUTOR_CONSISTENCY=ONE \
             balegas/ainvariants:latest
         shift # past argument
         exit
@@ -36,7 +37,7 @@ case $key in
         docker rm -f cassandra-client-initializer
         docker run --name cassandra-client-initializer --network cassandra-network \
             -e EXECUTOR_ENDPOINTS=node01,node02,node03 \
-            -e EXECUTOR_CONSISTENCY=QUORUM \
+            -e EXECUTOR_CONSISTENCY=ONE \
             balegas/ainvariants:latest -i
         shift # past argument
         exit
@@ -49,7 +50,7 @@ mkdir -p output/node01/ output/node02/ output/node03/
 
 docker run --name node01 --network cassandra-network \
  -v $(pwd)/config:/etc/cassandra/config \
- -v $(pwd)/output/node01:/usr/share/AInvariants/output/ \
+ -v $(pwd)/output/node01:/var/lib/cassandra/ \
  -e CASSANDRA_SEEDS=node01 \
  -e CASSANDRA_DC=dc1 \
  -e CASSANDRA_RACK=rack01 \
@@ -61,7 +62,7 @@ sleep 5
 
 docker run --name node02 --network cassandra-network \
  -v $(pwd)/config:/etc/cassandra/config \
- -v $(pwd)/output/node02:/usr/share/AInvariants/output/ \
+ -v $(pwd)/output/node02://var/lib/cassandra/ \
  -e CASSANDRA_SEEDS=node01 \
  -e CASSANDRA_DC=dc1 \
  -e CASSANDRA_RACK=rack01 \
@@ -73,7 +74,7 @@ sleep 60
 
 docker run --name node03 --network cassandra-network \
  -v $(pwd)/config:/etc/cassandra/config \
- -v $(pwd)/output/node03:/usr/share/AInvariants/output/ \
+ -v $(pwd)/output/node03:/var/lib/cassandra/ \
  -e CASSANDRA_SEEDS=node01 \
  -e CASSANDRA_DC=dc1 \
  -e CASSANDRA_RACK=rack01 \

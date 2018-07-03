@@ -5,7 +5,7 @@ services:
     container_name: node01
     volumes:
         - ./config:/etc/cassandra/config
-        - ./output/node01:/usr/share/AInvariants/output/
+        - ./output/node01:/var/lib/cassandra/
     command: -Dcassandra.metricsReporterConfigFile=/etc/cassandra/config/metrics.yml
     environment:
         - CASSANDRA_SEEDS=node01,node02
@@ -18,7 +18,7 @@ services:
     container_name: node02
     volumes:
         - ./config:/etc/cassandra/config
-        - ./output/node02:/usr/share/AInvariants/output/
+        - ./output/node02/:/var/lib/cassandra/
     command: -Dcassandra.metricsReporterConfigFile=/etc/cassandra/config/metrics.yml
     environment:
         - CASSANDRA_SEEDS=node01,node02
